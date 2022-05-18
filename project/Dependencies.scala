@@ -1,4 +1,3 @@
-import Dependencies.CONFIG
 import sbt._
 
 import scala.languageFeature.postfixOps
@@ -7,17 +6,23 @@ object Dependencies {
 
   object V {
 
-    val zio        = "1.0.10"
-    val zioHttp    = "1.0.0.0-RC17"
-    val tapir      = "0.18.3"
-    val circe      = "0.14.1"
-    val ziologging = "0.5.11"
-    val flyway     = "6.0.8"
-    val pureConfig = "0.16.0"
+    val zio              = "1.0.10"
+    val zioHttp          = "1.0.0.0-RC17"
+    val tapir            = "0.18.3"
+    val circe            = "0.14.1"
+    val ziologging       = "0.5.11"
+    val flyway           = "8.5.10"
+    val pureConfig       = "0.16.0"
+    val doobie       = "0.13.4"
+
+
+    val LiquibaseVersion = "3.4.2"
+    val quil             = "3.12.0"
   }
 
   object ZIO {
     lazy val core = "dev.zio" %% "zio" % V.zio
+    lazy val macros = "dev.zio" %% "zio-macros" % V.zio
   }
 
   object HTTP {
@@ -38,7 +43,11 @@ object Dependencies {
   }
 
   object DB {
-    lazy val flyway = "org.flywaydb" % "flyway-core" % V.flyway
+    lazy val flyway    = "org.flywaydb"  % "flyway-core"     % V.flyway
+    lazy val core      = "org.tpolecat" %% "doobie-core"      % V.doobie
+    lazy val postgres  = "org.tpolecat" %% "doobie-postgres"  % V.doobie
+    lazy val hikari    = "org.tpolecat" %% "doobie-hikari"    % V.doobie
+
   }
 
   object CONFIG {
@@ -47,6 +56,7 @@ object Dependencies {
 
   lazy val globalProjectDeps = Seq(
     ZIO.core,
+    ZIO.macros,
     HTTP.circe,
     HTTP.zhttp,
     TAPIR.tapir,
@@ -57,6 +67,9 @@ object Dependencies {
     TAPIR.tapirZioHttpSwagger,
     TAPIR.tapirhttpclient,
     DB.flyway,
+    DB.core,
+    DB.hikari,
+    DB.postgres,
     CONFIG.pureConfig
   )
 }

@@ -8,7 +8,7 @@ package object apiservice {
 
   type HasApiService = Has[ApiService]
 
-  type ApiServiceEnv = Any //AppEnv with HasAuthProvider
+  type ApiServiceEnv = AppEnv /*with HasAuthProvider*/
 
   type ApiServiceEffect[A] = ZIO[ApiServiceEnv, Throwable, A]
 

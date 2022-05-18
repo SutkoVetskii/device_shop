@@ -7,7 +7,7 @@ object Models {
   implicit val BrandCodec: Codec[Brand] = io.circe.generic.semiauto.deriveCodec
 
   case class Brand(
-      id: String,
+      id: Int,
       name: String
   )
 

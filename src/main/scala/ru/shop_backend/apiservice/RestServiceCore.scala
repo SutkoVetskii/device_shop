@@ -3,6 +3,7 @@ package ru.shop_backend.apiservice
 import ru.shop_backend.apiservice.ApiService.ErrorResponse
 import sttp.tapir.json.circe.jsonBody
 import io.circe.generic.auto._
+import ru.shop_backend.AppEnv
 import sttp.tapir.generic.auto._
 import sttp.tapir.ztapir._
 import sttp.model.StatusCode
@@ -17,7 +18,7 @@ trait RestServiceCore {
 
   def endpoints: Iterable[Endpoint[_, _, _, _]]
 
-  def routes: Http[Any /*AppEnv*/, Throwable, Request, Response[Any /*AppEnv*/, Throwable]]
+  def routes: Http[AppEnv, Throwable, Request, Response[AppEnv, Throwable]]
 
   protected val rootPath: Endpoint[Unit, ErrorResponse, Unit, Any] = sttp.tapir.endpoint
     .in("api")

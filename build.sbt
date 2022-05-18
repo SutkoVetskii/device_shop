@@ -12,6 +12,7 @@ def scalafmtSettings = Seq(
     )
     .value
 )
+scalacOptions += "-Ymacro-annotations"
 
 lazy val root = (project in file("."))
   .settings(

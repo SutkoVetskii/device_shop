@@ -8,6 +8,7 @@ import zhttp.http.{CORS, CORSConfig, Method}
 import zhttp.service.server.ServerChannelFactory
 import zhttp.service.{EventLoopGroup, Server => zServer}
 import zio._
+import zio.logging.log
 
 case class ServerConfig(
     port: Int,
@@ -31,7 +32,8 @@ object Server {
       route  <- ZIO.access[HasApiService](_.get.services)
       server = zServer.port(config.server.port) ++
         zServer.maxRequestSize(100 * 1020 * 1024) ++ //100 Mb
-        zServer.app(CORS(route, cORSConfig))
+        zServer.app(CORS(route, cORSConfig)) ++
+        zServer.error(thr => log.throwable("ZIO-HTTP", thr))
       _ <- server.make.useForever
         .provideSomeLayer[AppEnv](ServerChannelFactory.auto ++ EventLoopGroup.auto(0))
         .exitCode

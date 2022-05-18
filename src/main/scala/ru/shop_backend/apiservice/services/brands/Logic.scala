@@ -1,14 +1,25 @@
 package ru.shop_backend.apiservice.services.brands
 
-import ru.shop_backend.apiservice.ApiService
+import doobie.implicits.toSqlInterpolator
 import ru.shop_backend.apiservice.ApiService.BadRequest
-import ru.shop_backend.apiservice.services.brands.BrandsService.CoreEnv
 import ru.shop_backend.apiservice.services.brands.Models.Brand
-import zio.ZIO
+import ru.shop_backend.db.DbConnect
+import zio.logging.Logging
+import zio.{Has, ZIO}
 
 object Logic {
-  def getBrands: ZIO[Any, BadRequest, List[Brand]] = {
-    ZIO(List(Brand("234", "iphone"), Brand("234", "xiaomi"))).orElseFail(BadRequest("kek"))
+//  def getBrands= {
+//    ZIO(List(Brand(1, "iphone"), Brand(1, "xiaomi"))).orElseFail(BadRequest("kek"))
+//  }
+
+  def getBrands: ZIO[Logging with Has[DbConnect.Service], BadRequest, List[Brand]] = {
+    for {
+      db <- ZIO.service[DbConnect.Service]
+      kek <- db.select[Brand](
+        sql"""
+          select * from brand;
+           """).orElseFail(BadRequest("kek"))
+    } yield kek
   }
 
 }
