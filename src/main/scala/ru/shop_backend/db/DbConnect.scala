@@ -19,7 +19,7 @@ import java.util.UUID
 
 object DbConnect {
 
-  type HasDbConnect = Has[Service]
+  type DbConnect = Has[Service]
 
   case class DbConnectConfig(url: String, user: String, password: String, driver: String)
 
@@ -115,7 +115,7 @@ object DbConnect {
 
   }
 
-  val live: ZLayer[HasConfig with Blocking, Throwable, HasDbConnect] = ZLayer.fromManaged(
+  val live: ZLayer[HasConfig with Blocking, Throwable, DbConnect] = ZLayer.fromManaged(
     for {
       liveEC   <- ZIO.descriptor.map(_.executor.asEC).toManaged_
       blockEC  <- blocking(ZIO.descriptor.map(_.executor.asEC)).toManaged_

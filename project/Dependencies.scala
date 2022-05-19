@@ -50,6 +50,10 @@ object Dependencies {
 
   }
 
+  object LOGS {
+    lazy val ziologging      = "dev.zio"                    %% "zio-logging"       % V.ziologging
+  }
+
   object CONFIG {
     lazy val pureConfig = "com.github.pureconfig" %% "pureconfig" % V.pureConfig
   }
@@ -70,6 +74,7 @@ object Dependencies {
     DB.core,
     DB.hikari,
     DB.postgres,
-    CONFIG.pureConfig
+    CONFIG.pureConfig,
+    LOGS.ziologging,
   )
 }

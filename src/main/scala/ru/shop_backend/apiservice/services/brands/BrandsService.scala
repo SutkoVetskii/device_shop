@@ -3,9 +3,10 @@ package ru.shop_backend.apiservice.services.brands
 import ru.shop_backend.apiservice.services.brands.Models.Brand
 import ru.shop_backend.apiservice.{ApiService, ApiServiceEnv, RestService, ServiceInfo}
 import sttp.tapir.generic.auto.schemaForCaseClass
-import sttp.tapir.json.circe.jsonBody
+import sttp.tapir.json.circe._
 import sttp.tapir.ztapir.{ZServerEndpoint, _}
 import zhttp.http.{Http, Request, Response}
+
 
 
 object BrandsService extends RestService[ApiServiceEnv]{
@@ -20,9 +21,7 @@ object BrandsService extends RestService[ApiServiceEnv]{
       .name("brands")
       .in("brands")
       .out(jsonBody[List[Brand]].description("Список звонков"))
-      .zServerLogic(_ => {
-        Logic.getBrands
-      })
+      .zServerLogic(_ => Logic.getBrands)
   )
 
 }

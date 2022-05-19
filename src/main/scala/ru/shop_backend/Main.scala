@@ -1,19 +1,15 @@
 package ru.shop_backend
 
-import ru.shop_backend.apiservice.{ApiService, HasApiService}
+import ru.shop_backend.apiservice.ApiService
 import ru.shop_backend.config.GlobalCfg
 import ru.shop_backend.db.DbConnect
-import ru.shop_backend.db.DbConnect.HasDbConnect
+import ru.shop_backend.db.service.brand.BrandDbService
 import ru.shop_backend.server.Server
 import zio.blocking.Blocking
 import zio.clock.Clock
-import zio.console.putStrLn
-import zio.{ExitCode, ZIO, ZLayer}
-import zio.console._
-import zio._
-import zio.duration.durationInt
+import zio.console.{putStrLn, _}
 import zio.logging._
-import scala.jdk.CollectionConverters._
+import zio._
 
 
 object Main extends App {
@@ -31,7 +27,7 @@ object Main extends App {
       format = LogFormat.ColoredLogFormat()
     ) >>> Logging.withRootLoggerName("my-component")
 
-    sys ++ ApiService.live ++ db ++ GlobalCfg.live ++ log
+    sys ++ ApiService.live ++ GlobalCfg.live ++ log ++  (db >>> BrandDbService.live)
   }
 
   override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
