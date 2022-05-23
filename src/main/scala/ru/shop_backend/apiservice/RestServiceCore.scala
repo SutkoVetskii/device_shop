@@ -1,20 +1,19 @@
 package ru.shop_backend.apiservice
 
-import ru.shop_backend.apiservice.ApiService.ErrorResponse
-import sttp.tapir.json.circe.jsonBody
 import io.circe.generic.auto._
 import ru.shop_backend.AppEnv
-import sttp.tapir.generic.auto._
-import sttp.tapir.ztapir._
+import ru.shop_backend.apiservice.ApiService.ErrorResponse
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
+import sttp.tapir.generic.auto._
+import sttp.tapir.json.circe.jsonBody
+import sttp.tapir.ztapir._
 import zhttp.http.{Http, Request, Response}
 
 case class ServiceInfo(tagName: String)
 
 trait RestServiceCore {
   def info: ServiceInfo
-
 
   def endpoints: Iterable[Endpoint[_, _, _, _]]
 

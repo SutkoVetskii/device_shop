@@ -102,9 +102,9 @@ object DbConnect {
         _ <- logMsg(update.sql, t0, update.pos)
       } yield retret
 
-    def insert(sql: String): RIO[Logging, UUID] = insert[UUID](Update0(sql, None), "id")
+    def insert(sql: String): RIO[Logging, Int] = insert[Int](Update0(sql, None), "id")
 
-    def insert(sql: Fragment): RIO[Logging, UUID] = insert[UUID](sql.update, "id")
+    def insert(sql: Fragment): RIO[Logging, Int] = insert[Int](sql.update, "id")
 
     def executeQuery[O](query: ConnectionIO[O]): Task[O] =
       query.transact(connect)

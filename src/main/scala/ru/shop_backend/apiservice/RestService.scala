@@ -31,8 +31,6 @@ trait RestService[R <: ApiServiceEnv] extends RestServiceCore {
           }))
       )
 
-//  protected val tenant = path[String]("tenant").description("Идентификатор организации")todo
-
   override def endpoints: Iterable[Endpoint[_, _, _, _]] = services.map(_.endpoint)
 
   protected def routes_ : Http[CoreEnv, Throwable, Request, Response[CoreEnv, Throwable]] = {

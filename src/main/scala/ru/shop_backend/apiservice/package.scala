@@ -1,6 +1,9 @@
 package ru.shop_backend
 
 import ru.shop_backend.apiservice.services.brands.BrandsService
+import ru.shop_backend.apiservice.services.devices.DevicesService
+import ru.shop_backend.apiservice.services.types.TypesService
+import ru.shop_backend.apiservice.services.user.UserService
 import sttp.tapir.openapi.{Contact, Info}
 import zio.{Has, ZIO}
 
@@ -22,6 +25,9 @@ package object apiservice {
   )
 
   val servicesApi: List[RestServiceCore] = List(
-    BrandsService
+    BrandsService,
+    TypesService,
+    DevicesService,
+    UserService
   )
 }
