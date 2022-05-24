@@ -25,11 +25,11 @@ trait RestServiceCore {
     .errorOut {
       oneOf[ErrorResponse](
         oneOfMapping(StatusCode.BadRequest, jsonBody[ApiService.BadRequest].description("bad request")),
-        oneOfMapping(StatusCode.Unauthorized, jsonBody[ApiService.AuthError].description("unauthorized")),
-        oneOfMapping(StatusCode.NotFound, jsonBody[ApiService.NotFound].description("not found")),
-        oneOfMapping(StatusCode.InternalServerError, jsonBody[ApiService.InternalError].description("Internal error")),
-        oneOfMapping(StatusCode.Conflict, jsonBody[ApiService.Conflict].description("Internal error")),
-        oneOfDefaultMapping(jsonBody[ErrorResponse].description("unknown"))
+//        oneOfMapping(StatusCode.Unauthorized, jsonBody[ApiService.AuthError].description("unauthorized")),
+//        oneOfMapping(StatusCode.NotFound, jsonBody[ApiService.NotFound].description("not found")),
+//        oneOfMapping(StatusCode.InternalServerError, jsonBody[ApiService.InternalError].description("Internal error")),
+//        oneOfMapping(StatusCode.Conflict, jsonBody[ApiService.Conflict].description("Internal error")),
+//        oneOfDefaultMapping(jsonBody[ErrorResponse].description("unknown"))
       )
     }
 }

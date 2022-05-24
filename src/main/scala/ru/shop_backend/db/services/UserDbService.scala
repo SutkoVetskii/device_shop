@@ -13,18 +13,18 @@ object UserDbService {
   val tableName = fr""""user""""
 
   trait Service {
-    def insert(user: UserRegInfo): RIO[Logging, Int]
+    def insert(user: UserRegInfo): RIO[Logging, User]
     def find(id: Int): RIO[Logging, User]
     def find(email: String): RIO[Logging, User]
   }
 
   class UserDbServiceImpl(db: DbConnect.Service) extends Service {
 
-    def insert(user: UserRegInfo): RIO[Logging, Int] = {
+    def insert(user: UserRegInfo): RIO[Logging, User] = {
       val values = fr"${user.email}, ${user.password}"
-      db.insert(
+      db.queryUniqueRet[User](
         sql"""insert into $tableName (email, password)
-             |values ($values);""".stripMargin
+                     values ($values) returning *;"""
       )
     }
 

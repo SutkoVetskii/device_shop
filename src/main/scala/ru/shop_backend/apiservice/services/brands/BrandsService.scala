@@ -7,9 +7,7 @@ import sttp.tapir.json.circe._
 import sttp.tapir.ztapir.{ZServerEndpoint, _}
 import zhttp.http.{Http, Request, Response}
 
-
-
-object BrandsService extends RestService[ApiServiceEnv]{
+object BrandsService extends RestService[ApiServiceEnv] {
 
   override def info: ServiceInfo = ServiceInfo("Brands")
 
@@ -22,14 +20,28 @@ object BrandsService extends RestService[ApiServiceEnv]{
       .in("brands")
       .out(jsonBody[List[Brand]].description("Список брендов"))
       .zServerLogic(_ => Logic.getBrands),
-
     rootPath.post
       .description("Добавить бренд")
       .name("brands")
       .in("brands")
       .in(jsonBody[BrandInsertInfo].description("Информация для добавления бренда"))
       .out(jsonBody[Brand].description("Добавленный бренд"))
-      .zServerLogic({case (info) => Logic.addBrand(info.name) })
+      .zServerLogic(info => Logic.addBrand(info.name)),
+    rootPath.put
+      .description("Обновить бренд")
+      .name("brands")
+      .in("brands")
+      .in(path[Int]("id"))
+      .in(jsonBody[BrandInsertInfo].description("Информация для обновления бренда"))
+      .out(jsonBody[Brand].description("Обновленный бренд"))
+      .zServerLogic({ case (id, info) => Logic.updateBrand(id, info.name) }),
+    rootPath.delete
+      .description("Удалить бренд")
+      .name("brands")
+      .in("brands")
+      .in(path[Int]("id"))
+      .out(statusCode)
+      .zServerLogic(id => Logic.deleteBrand(id))
   )
 
 }

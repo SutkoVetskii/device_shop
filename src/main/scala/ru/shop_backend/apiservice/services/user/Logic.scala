@@ -12,7 +12,6 @@ object Logic {
     for {
       service <- ZIO.service[UserDbService.Service]
       user <- service.insert(user)
-        .flatMap(id => service.find(id))
         .mapError(e => BadRequest(e.getMessage))
     } yield user
 

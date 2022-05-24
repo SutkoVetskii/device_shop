@@ -14,7 +14,9 @@ object TypeDbService {
 
   trait Service {
     def getAll: RIO[Logging, List[Type]]
-    def insert(name: String): RIO[Logging, Int]
+    def insert(name: String): RIO[Logging, Type]
+    def update(id: Int, name: String): ZIO[Logging, Throwable, Type]
+    def delete(id: Int): ZIO[Logging, Throwable, Int]
   }
 
   class TypeDbServiceImpl(db: DbConnect.Service) extends Service {
@@ -23,9 +25,17 @@ object TypeDbService {
       sql"""select * from $tableName;"""
     )
 
-    def insert(name: String): RIO[Logging, Int] = db.insert(
+    def insert(name: String): RIO[Logging, Type] = db.queryUniqueRet[Type](
       sql"""insert into $tableName (name)
-           |values ($name);""".stripMargin
+            values ($name) returning *;"""
+    )
+
+    def update(id: Int, name: String): ZIO[Logging, Throwable, Type] = db.queryUniqueRet[Type](
+      sql"""update $tableName set name = $name where id=$id returning *;"""
+    )
+
+    def delete(id: Int): ZIO[Logging, Throwable, Int] = db.delete(
+      sql"""delete from $tableName where id=$id;"""
     )
   }
 

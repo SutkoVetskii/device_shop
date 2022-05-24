@@ -14,7 +14,9 @@ object BrandDbService {
 
   trait Service {
     def getAll: RIO[Logging, List[Brand]]
-    def insert(name: String): RIO[Logging, Int]
+    def insert(name: String): RIO[Logging, Brand]
+    def update(id: Int, name: String): ZIO[Logging, Throwable, Brand]
+    def delete(id: Int): ZIO[Logging, Throwable, Int]
   }
 
   class BrandDbServiceImpl(db: DbConnect.Service) extends Service {
@@ -23,10 +25,18 @@ object BrandDbService {
       sql"""select * from $tableName;"""
     )
 
-    def insert(name: String): RIO[Logging, Int] = db.insert(
+    def insert(name: String): RIO[Logging, Brand] = db.queryUniqueRet[Brand](
       sql"""insert into $tableName (name)
-           |values ($name);""".stripMargin
-      )
+                   values ($name) returning *;"""
+    )
+
+    def update(id: Int, name: String): ZIO[Logging, Throwable, Brand] = db.queryUniqueRet[Brand](
+      sql"""update $tableName set name = $name where id=$id returning *;"""
+    )
+
+    def delete(id: Int): ZIO[Logging, Throwable, Int] = db.delete(
+      sql"""delete from $tableName where id=$id;"""
+    )
   }
 
   val live: ZLayer[DbConnect, Nothing, BrandDbService] = (for {

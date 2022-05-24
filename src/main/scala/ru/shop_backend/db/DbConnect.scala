@@ -1,11 +1,9 @@
 package ru.shop_backend.db
 
 import cats.effect.Blocker
-import cats.implicits._
 import doobie._
 import doobie.hikari.HikariTransactor
 import doobie.implicits._
-import doobie.postgres.implicits._
 import doobie.util.pos.Pos
 import org.flywaydb.core.Flyway
 import ru.shop_backend.config.AppConfig
@@ -14,8 +12,6 @@ import zio.blocking.{Blocking, blocking}
 import zio.interop.catz._
 import zio.logging.{Logging, log}
 import zio.{Has, RIO, Task, URIO, ZIO, ZLayer, blocking => _}
-
-import java.util.UUID
 
 object DbConnect {
 
@@ -66,53 +62,34 @@ object DbConnect {
 
     def select[O: Read](sql: Fragment): RIO[Logging, List[O]] = select(sql.query[O])
 
-    def update(query: Update0): ZIO[Logging, Throwable, Int] =
+    def queryUniqueRet[A: Read](query: Fragment): ZIO[Logging, Throwable, A] = {
       for {
         t0 <- ZIO.effectTotal(System.currentTimeMillis())
-        ret <- query.run
+        q = query.update
+        ret <- query.query[A].unique
           .transact(connect)
-          .tapError(expt => log.throwable(query.sql, expt))
-        _ <- logMsg(query.sql, t0, query.pos, ret)
+          .tapError(expt => log.throwable(q.sql, expt))
+        _ <- logMsg(q.sql, t0, q.pos)
       } yield ret
+    }
 
-    def update(sql: String): RIO[Logging, Int] = update(Update0(sql, None))
-
-    def update(sql: Fragment): RIO[Logging, Int] = update(sql.update)
-
-    def insert[O: Read](query: Update0, idColumn: String): ZIO[Logging, Throwable, O] =
-      for {
-        t0 <- ZIO.effectTotal(System.currentTimeMillis())
-        ret <- query
-          .withUniqueGeneratedKeys[O](idColumn)
-          .transact(connect)
-          .tapError(expt => log.throwable(query.sql, expt))
-        _ <- logMsg(query.sql, t0, query.pos)
-      } yield ret
-
-    def insert[TT: Write, O: Read](update: Update[TT], idColumn: String, data: List[TT]): ZIO[Logging, Throwable, List[O]] =
-      for {
-        t0 <- ZIO.effectTotal(System.currentTimeMillis())
-        ret <- ZIO.effect(
-          update
-            .updateManyWithGeneratedKeys(idColumn)(data)
-            .transact(connect)
-        )
-        retret <- ret.compile.toList
-          .tapError(expt => log.throwable(update.sql, expt))
-        _ <- logMsg(update.sql, t0, update.pos)
-      } yield retret
-
-    def insert(sql: String): RIO[Logging, Int] = insert[Int](Update0(sql, None), "id")
-
-    def insert(sql: Fragment): RIO[Logging, Int] = insert[Int](sql.update, "id")
-
-    def executeQuery[O](query: ConnectionIO[O]): Task[O] =
-      query.transact(connect)
-
-    val getVersion: RIO[Logging, String] = for {
-      ret <- selectOne[String](sql"SELECT version();")
+    def delete(query: Fragment): ZIO[Logging, Throwable, Int] = for {
+      t0 <- ZIO.effectTotal(System.currentTimeMillis())
+      q = query.update
+      ret <- q.run.transact(connect)
+        .tapError(expt => log.throwable(q.sql, expt))
+      _ <- logMsg(q.sql, t0, q.pos, ret)
     } yield ret
 
+    def getOptFr(op: Option[_], fr: String): Option[Fragment] = {
+      op.map(x => Fragment.const({
+        val value = x match {
+          case v: Int => v
+          case _ => s"'$x'"
+        }
+        s"$fr $value"
+      }))
+    }
   }
 
   val live: ZLayer[HasConfig with Blocking, Throwable, DbConnect] = ZLayer.fromManaged(
