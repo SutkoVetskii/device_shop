@@ -1,5 +1,6 @@
 package ru.shop_backend
 
+import ru.shop_backend.apiservice.services.basket.BasketService
 import ru.shop_backend.apiservice.services.brands.BrandsService
 import ru.shop_backend.apiservice.services.devices.DevicesService
 import ru.shop_backend.apiservice.services.types.TypesService
@@ -25,9 +26,10 @@ package object apiservice {
   )
 
   val servicesApi: List[RestServiceCore] = List(
+    DevicesService,
     BrandsService,
     TypesService,
-    DevicesService,
+    BasketService,
     UserService
   )
 }

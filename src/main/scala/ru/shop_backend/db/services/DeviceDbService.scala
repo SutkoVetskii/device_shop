@@ -7,6 +7,7 @@ import ru.shop_backend.db.DbConnect.DbConnect
 import zio.logging.Logging
 import zio.{Has, RIO, ZIO, ZLayer}
 import doobie._
+import ru.shop_backend.db.SystemModel.Pagination
 
 object DeviceDbService {
 
@@ -14,7 +15,7 @@ object DeviceDbService {
   val tableName = fr"device"
 
   trait Service {
-    def find(filter: DeviceFilter): RIO[Logging, List[Device]]
+    def find(paging: Option[Pagination], filter: DeviceFilter): RIO[Logging, List[Device]]
     def getOne(id: Int): RIO[Logging, DeviceResponse]
     def insert(info: DeviceInsertInfo): RIO[Logging, DeviceRet]
     def update(id: Int, info: DeviceUpdateInfo): ZIO[Logging, Throwable, DeviceRet]
@@ -23,17 +24,23 @@ object DeviceDbService {
 
   class DeviceDbServiceImpl(db: DbConnect.Service) extends Service {
 
-    def find(filter: DeviceFilter): RIO[Logging, List[Device]] = {
+    def find(paging: Option[Pagination], filter: DeviceFilter): RIO[Logging, List[Device]] = {
       val where = Fragments.whereAndOpt(
         db.getOptFr(filter.priceFrom, "d.price >="),
         db.getOptFr(filter.priceTo, "d.price <="),
         db.getOptFr(filter.priceTo, "d.type_id ="),
         db.getOptFr(filter.priceTo, "d.brand_id =")
       )
+
+      val pagingQuery = paging match {
+        case Some(pag) => pag.sqlPagination
+        case None      => fr""
+      }
+
       val query = sql"""select d.id, d.name, d.price, t.name, b.name, d.rating, d.img
                         from $tableName d
                                  left join brand b on b.id = d.brand_id
-                                 left join "type" t on t.id = d.type_id """ ++ where
+                                 left join "type" t on t.id = d.type_id $where $pagingQuery"""
       db.select[Device](query)
     }
 

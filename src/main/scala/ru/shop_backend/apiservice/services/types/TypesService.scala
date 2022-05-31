@@ -16,20 +16,20 @@ object TypesService extends RestService[ApiServiceEnv] {
   override protected val services: List[ZServerEndpoint[CoreEnv, _, ApiService.ErrorResponse, _]] = List(
     rootPath.get
       .description("Получить список типов")
-      .name("types")
+      .name("typesGet")
       .in("types")
       .out(jsonBody[List[Type]].description("Список типов"))
       .zServerLogic(_ => Logic.getTypes),
     rootPath.post
       .description("Добавить тип")
-      .name("types")
+      .name("typesPost")
       .in("types")
       .in(jsonBody[TypeInsertInfo].description("Информация для добавления типа"))
       .out(jsonBody[Type].description("Добавленный бренд"))
       .zServerLogic({ case (info) => Logic.addType(info.name) }),
     rootPath.put
       .description("Обновить тип")
-      .name("types")
+      .name("typesPut")
       .in("types")
       .in(path[Int]("id"))
       .in(jsonBody[TypeInsertInfo].description("Информация для обновления типа"))
@@ -37,7 +37,7 @@ object TypesService extends RestService[ApiServiceEnv] {
       .zServerLogic({ case (id, info) => Logic.updateType(id, info.name) }),
     rootPath.delete
       .description("Удалить тип")
-      .name("types")
+      .name("typesDel")
       .in("types")
       .in(path[Int]("id"))
       .out(statusCode)

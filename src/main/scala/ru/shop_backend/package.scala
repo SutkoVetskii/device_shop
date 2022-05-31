@@ -2,6 +2,7 @@ package ru
 
 import ru.shop_backend.apiservice.HasApiService
 import ru.shop_backend.config.GlobalCfg.HasConfig
+import ru.shop_backend.db.services.BasketDbService.BasketDbService
 import ru.shop_backend.db.services.BrandDbService.BrandDbService
 import ru.shop_backend.db.services.DeviceDbService.DeviceDbService
 import ru.shop_backend.db.services.TypeDbService.TypeDbService
@@ -18,7 +19,7 @@ package object shop_backend {
   type ServiceEnv = SystemEnv with HasConfig with Logging
 
   type AppEnv =
-    ServiceEnv with HasApiService with BrandDbService with TypeDbService with DeviceDbService with UserDbService
+    ServiceEnv with HasApiService with BrandDbService with TypeDbService with DeviceDbService with UserDbService with BasketDbService
 
   type AppTaskIO[E, A] = ZIO[AppEnv, E, A]
 

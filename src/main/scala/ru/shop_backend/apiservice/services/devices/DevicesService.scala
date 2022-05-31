@@ -17,21 +17,22 @@ object DevicesService extends RestService[ApiServiceEnv] {
   override protected val services: List[ZServerEndpoint[CoreEnv, _, ApiService.ErrorResponse, _]] = List(
     rootPath.post
       .description("Получить список устройств")
-      .name("devices")
+      .name("devicesPostFind")
       .in("devices" / "find")
+      .in(paging)
       .in(jsonBody[DeviceFilter].description("Информация для добавления устройства"))
       .out(jsonBody[List[Device]].description("Список устройств"))
-      .zServerLogic(filter => Logic.getDevices(filter)),
+      .zServerLogic({ case (page, limit, filter) => Logic.getDevices(page, limit, filter) }),
     rootPath.post
       .description("Добавить стройство")
-      .name("devices")
+      .name("devicesPost")
       .in("devices")
       .in(jsonBody[DeviceInsertInfo].description("Информация для добавления устройства"))
       .out(jsonBody[DeviceRet].description("Добавленное устройство"))
       .zServerLogic(info => Logic.addDevice(info)),
     rootPath.get
       .description("Получить информацию об устройстве")
-      .name("devices")
+      .name("devicesGet")
       .in("devices")
       .in(path[Int]("id"))
       .description("id устройства")
@@ -39,7 +40,7 @@ object DevicesService extends RestService[ApiServiceEnv] {
       .zServerLogic({ case id => Logic.getDeviceWithInfo(id) }),
     rootPath.put
       .description("Обновить устройство")
-      .name("devices")
+      .name("devicesPut")
       .in("devices")
       .in(path[Int]("id"))
       .in(jsonBody[DeviceUpdateInfo].description("Данные для обновления устройства"))
@@ -48,7 +49,7 @@ object DevicesService extends RestService[ApiServiceEnv] {
       .zServerLogic({ case (id, info) => Logic.updateDevice(id, info) }),
         rootPath.delete
           .description("Удалить устройство")
-          .name("devices")
+          .name("devicesDel")
           .in("devices")
           .in(path[Int]("id")).description("id устройства")
           .out(statusCode)

@@ -16,20 +16,20 @@ object BrandsService extends RestService[ApiServiceEnv] {
   override protected val services: List[ZServerEndpoint[CoreEnv, _, ApiService.ErrorResponse, _]] = List(
     rootPath.get
       .description("Получить список брендов")
-      .name("brands")
+      .name("brandsGet")
       .in("brands")
       .out(jsonBody[List[Brand]].description("Список брендов"))
       .zServerLogic(_ => Logic.getBrands),
     rootPath.post
       .description("Добавить бренд")
-      .name("brands")
+      .name("brandsPost")
       .in("brands")
       .in(jsonBody[BrandInsertInfo].description("Информация для добавления бренда"))
       .out(jsonBody[Brand].description("Добавленный бренд"))
       .zServerLogic(info => Logic.addBrand(info.name)),
     rootPath.put
       .description("Обновить бренд")
-      .name("brands")
+      .name("brandsPut")
       .in("brands")
       .in(path[Int]("id"))
       .in(jsonBody[BrandInsertInfo].description("Информация для обновления бренда"))
@@ -37,7 +37,7 @@ object BrandsService extends RestService[ApiServiceEnv] {
       .zServerLogic({ case (id, info) => Logic.updateBrand(id, info.name) }),
     rootPath.delete
       .description("Удалить бренд")
-      .name("brands")
+      .name("brandsDel")
       .in("brands")
       .in(path[Int]("id"))
       .out(statusCode)

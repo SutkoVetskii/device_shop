@@ -3,7 +3,7 @@ package ru.shop_backend
 import ru.shop_backend.apiservice.ApiService
 import ru.shop_backend.config.GlobalCfg
 import ru.shop_backend.db.DbConnect
-import ru.shop_backend.db.services.{BrandDbService, DeviceDbService, TypeDbService, UserDbService}
+import ru.shop_backend.db.services.{BasketDbService, BrandDbService, DeviceDbService, TypeDbService, UserDbService}
 import ru.shop_backend.server.Server
 import zio._
 import zio.blocking.Blocking
@@ -25,12 +25,13 @@ object Main extends App {
     val dType = db >>> TypeDbService.live
     val device = db >>> DeviceDbService.live
     val user = db >>> UserDbService.live
+    val basket = db >>> BasketDbService.live
     val log = Logging.console(
       logLevel = LogLevel.Info,
       format = LogFormat.ColoredLogFormat()
     ) >>> Logging.withRootLoggerName("my-component")
 
-    sys ++ ApiService.live ++ GlobalCfg.live ++ log ++ brand ++ dType ++ device ++ user
+    sys ++ ApiService.live ++ GlobalCfg.live ++ log ++ brand ++ dType ++ device ++ user ++ basket
   }
 
   override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
