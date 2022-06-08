@@ -1,13 +1,13 @@
 package ru.shop_backend.apiservice
 
-import ru.shop_backend.apiservice.ApiService.{BadRequest, ErrorResponse, ErrorWithInfo, InternalError}
+import ru.shop_backend.apiservice.ApiService.{AuthError, BadRequest, ErrorResponse, ErrorWithInfo, InternalError}
 import sttp.tapir._
 import sttp.tapir.server.ziohttp.ZioHttpInterpreter
 import sttp.tapir.ztapir.ZServerEndpoint
 import zhttp.http.{Http, Request, Response}
 import zio.ZIO
 
-trait RestService[R <: ApiServiceEnv] extends RestServiceCore {
+trait RestService[R <: ApiServiceEnv] extends RestServiceCore with RestDirective {
 
   type CoreEnv             = R
   type RestTask[A]         = ZIO[CoreEnv, Throwable, A]
