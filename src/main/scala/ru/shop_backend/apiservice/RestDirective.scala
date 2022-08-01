@@ -2,6 +2,7 @@ package ru.shop_backend.apiservice
 
 import ru.shop_backend.AppEnv
 import ru.shop_backend.apiservice.ApiService.{AuthError, BadRequest, ErrorResponse}
+import ru.shop_backend.apiservice.services.user.Models.User
 import ru.shop_backend.db.services.UserDbService
 import sttp.tapir.Endpoint
 import sttp.tapir.model.UsernamePassword
@@ -28,15 +29,15 @@ trait RestDirective {
     }
 
     def logicWithAuth[R <: AppEnv](
-        f: I => ZIO[R, Throwable, O]
+        f: (I, User) => ZIO[R, Throwable, O]
     )(
         implicit err: Throwable => ErrorResponse
     ) = {
         auth().serverLogic {
-        case ((_, i), _) =>
+        case ((user, i), _) =>
           for {
             _   <- log.info(s"Start request with $i  ")
-            ret <- f(i).mapError(err)
+            ret <- f(i, user).mapError(err)
           } yield ret
 
       }

@@ -34,10 +34,10 @@ object BrandsService extends RestService[ApiServiceEnv] {
       .in(path[Int]("id"))
       .in(jsonBody[BrandInsertInfo].description("Информация для обновления бренда"))
       .out(jsonBody[Brand].description("Обновленный бренд"))
-      .zServerLogic({ case (id, info) => Logic.updateBrand(id, info.name) }),
+      .logicWithAdminAuth({ case (id, info) => Logic.updateBrand(id, info.name) }),
     rootPath.delete
       .description("Удалить бренд")
-      .name("brandsDel")
+      .name("brandsDel ")
       .in("brands")
       .in(path[Int]("id"))
       .out(statusCode)

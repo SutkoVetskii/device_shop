@@ -26,7 +26,7 @@ object TypesService extends RestService[ApiServiceEnv] {
       .in("types")
       .in(jsonBody[TypeInsertInfo].description("Информация для добавления типа"))
       .out(jsonBody[Type].description("Добавленный бренд"))
-      .zServerLogic({ case (info) => Logic.addType(info.name) }),
+      .logicWithAdminAuth({ case (info) => Logic.addType(info.name) }),
     rootPath.put
       .description("Обновить тип")
       .name("typesPut")
@@ -34,14 +34,14 @@ object TypesService extends RestService[ApiServiceEnv] {
       .in(path[Int]("id"))
       .in(jsonBody[TypeInsertInfo].description("Информация для обновления типа"))
       .out(jsonBody[Type].description("Обновленный тип"))
-      .zServerLogic({ case (id, info) => Logic.updateType(id, info.name) }),
+      .logicWithAdminAuth({ case (id, info) => Logic.updateType(id, info.name) }),
     rootPath.delete
       .description("Удалить тип")
       .name("typesDel")
       .in("types")
       .in(path[Int]("id"))
       .out(statusCode)
-      .zServerLogic(id => Logic.deleteType(id))
+      .logicWithAdminAuth(id => Logic.deleteType(id))
   )
 
 }

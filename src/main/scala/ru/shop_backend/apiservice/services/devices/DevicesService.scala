@@ -29,7 +29,7 @@ object DevicesService extends RestService[ApiServiceEnv] {
       .in("devices")
       .in(jsonBody[DeviceInsertInfo].description("Информация для добавления устройства"))
       .out(jsonBody[DeviceRet].description("Добавленное устройство"))
-      .zServerLogic(info => Logic.addDevice(info)),
+      .logicWithAdminAuth(info => Logic.addDevice(info)),
     rootPath.get
       .description("Получить информацию об устройстве")
       .name("devicesGet")
@@ -46,14 +46,15 @@ object DevicesService extends RestService[ApiServiceEnv] {
       .in(jsonBody[DeviceUpdateInfo].description("Данные для обновления устройства"))
       .description("id устройства")
       .out(jsonBody[DeviceRet].description("Информация об устройстве"))
-      .zServerLogic({ case (id, info) => Logic.updateDevice(id, info) }),
-        rootPath.delete
-          .description("Удалить устройство")
-          .name("devicesDel")
-          .in("devices")
-          .in(path[Int]("id")).description("id устройства")
-          .out(statusCode)
-          .zServerLogic(id => Logic.deleteDevice(id))
+      .logicWithAdminAuth({ case (id, info) => Logic.updateDevice(id, info) }),
+    rootPath.delete
+      .description("Удалить устройство")
+      .name("devicesDel")
+      .in("devices")
+      .in(path[Int]("id"))
+      .description("id устройства")
+      .out(statusCode)
+      .logicWithAdminAuth(id => Logic.deleteDevice(id))
   )
 
 }
